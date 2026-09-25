@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ReservaRepository extends JpaRepository<StatusReserva, UUID> {
+public interface ReservaRepository extends JpaRepository<Reserva, UUID> {
 
     @Query("""
         select r
-        from Resera r
+        from Reserva r
         where r.areaComum.id = :areaComumId
         and r.dataReserva = :dataReserva
-        and r.status.nome = 'APROVADO'
+        and r.statusReserva.nome = 'APROVADO'
         and (
             (r.horaInicio <= :horaInicio and r.horaFim > :horaInicio)
          or (r.horaInicio <= :horaFim and r.horaFim >= :horaFim)
