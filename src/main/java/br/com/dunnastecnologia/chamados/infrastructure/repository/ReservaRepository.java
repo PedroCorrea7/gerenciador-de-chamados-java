@@ -1,7 +1,6 @@
 package br.com.dunnastecnologia.chamados.infrastructure.repository;
 
 import br.com.dunnastecnologia.chamados.domain.model.Reserva;
-import br.com.dunnastecnologia.chamados.domain.model.StatusReserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,4 +34,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, UUID> {
     );
 
     List<Reserva> findByMoradorId(UUID moradorId);
+
+    List<Reserva> findAllByOrderByDataReservaDesc();
 }

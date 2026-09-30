@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -122,5 +123,13 @@ public class ReservaService {
 
         reserva.setStatusReserva(novoStatus);
         return reservaRepository.save(reserva);
+    }
+
+    public List<Reserva> listarTodasReservasAdmin() {
+        return reservaRepository.findAllByOrderByDataReservaDesc();
+    }
+
+    public List<Reserva> listarMinhasReservas(UUID moradorId) {
+        return reservaRepository.findByMoradorId(moradorId);
     }
 }
