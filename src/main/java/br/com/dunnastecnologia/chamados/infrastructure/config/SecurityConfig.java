@@ -134,7 +134,7 @@ public class SecurityConfig {
         ) throws Exception {
             http
                     .authorizeHttpRequests(auth -> auth
-                            .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+                            .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                             .requestMatchers(
                                     "/",
                                     "/login",

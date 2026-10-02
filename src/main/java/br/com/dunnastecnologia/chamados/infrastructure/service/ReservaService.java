@@ -59,8 +59,17 @@ public class ReservaService {
             throw new BusinessRuleException("O horário de término deve ser posterior ao horário de ínicio");
         }
 
+        LocalDateTime momentoResera = LocalDateTime.of(data, inicio);
+        if (momentoResera.isBefore(LocalDateTime.now())){
+            throw new IllegalArgumentException("Não é possível solicitar uma reserva para datas e horários passados.");
+        }
+
+
         AreaComum areaComum = areaComumRepository.findById(areaComumId)
                 .orElseThrow(()-> new ResourceNotFoundException("Área comum não encontrada"));
+        if (!areaComum.getAtiva()){
+            throw new IllegalArgumentException("Area comum inativa");
+        }
 
         Morador moradorEntity = moradorRepository.findByIdAndAtivoTrue(morador.id())
                 .orElseThrow(()-> new ResourceNotFoundException("Morador não encontrado"));
@@ -91,9 +100,27 @@ public class ReservaService {
     }
 
     @Transactional
-    public  Reserva negarReserva(AuthenticatedUser admin, UUID reservaId) {
+    public Reserva negarReserva(AuthenticatedUser admin, UUID reservaId, String motivo) {
         authenticatedUserValidator.assertAdministrador(admin);
-        return alterarStatusReserva(reservaId, STATUS_REPROVADO);
+
+        if (motivo == null || motivo.isBlank()) {
+            throw new BusinessRuleException("É obrigatório informar um motivo para a negação da reserva.");
+        }
+
+        Reserva reserva = reservaRepository.findById(reservaId)
+                .orElseThrow(()-> new ResourceNotFoundException("Reserva não encontrada"));
+
+        if (STATUS_CANCELADO.equals(reserva.getStatusReserva().getNome()) || STATUS_REPROVADO.equals(reserva.getStatusReserva().getNome())){
+            throw new BusinessRuleException("Não é possível alterar uma reserva que já foi finalizada");
+        }
+
+        StatusReserva novoStatus = statusReservaRepository.findByNome(STATUS_REPROVADO)
+                .orElseThrow(()-> new BusinessRuleException("Status " + STATUS_REPROVADO + " não configurado"));
+
+        reserva.setStatusReserva(novoStatus);
+        reserva.setMotivoNegacao(motivo);
+
+        return reservaRepository.save(reserva);
     }
 
     @Transactional

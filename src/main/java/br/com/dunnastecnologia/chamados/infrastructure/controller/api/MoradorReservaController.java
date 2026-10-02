@@ -3,6 +3,7 @@ package br.com.dunnastecnologia.chamados.infrastructure.controller.api;
 import br.com.dunnastecnologia.chamados.infrastructure.controller.web.WebControllerSupport;
 import br.com.dunnastecnologia.chamados.infrastructure.controller.web.form.SolicitarReservaForm;
 import br.com.dunnastecnologia.chamados.infrastructure.repository.AreaComumRepository;
+import br.com.dunnastecnologia.chamados.infrastructure.service.AreaComumService;
 import br.com.dunnastecnologia.chamados.infrastructure.service.ReservaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,19 +15,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.nio.channels.ScatteringByteChannel;
 import java.util.UUID;
 
 @Controller
 @RequestMapping("/morador/reservas")
 @PreAuthorize("hasRole('MORADOR')")
-public class MoradorReservaCotroller {
+public class MoradorReservaController {
 
     private final ReservaService reservaService;
     private final AreaComumRepository areaComumRepository;
     private final WebControllerSupport support;
 
-    public MoradorReservaCotroller(ReservaService reservaService, AreaComumRepository areaComumRepository, WebControllerSupport support) {
+    public MoradorReservaController(ReservaService reservaService, AreaComumRepository areaComumRepository, WebControllerSupport support) {
         this.reservaService = reservaService;
         this.areaComumRepository = areaComumRepository;
         this.support = support;
@@ -37,13 +37,24 @@ public class MoradorReservaCotroller {
     public String listarMinhasReservas(Authentication authentication, Model model) {
         var currentUser = support.authenticatedUser(authentication);
         model.addAttribute("reservas", reservaService.listarMinhasReservas(currentUser.id()));
+
+        model.addAttribute("pageTitle", "Morador - Reservas");
+        model.addAttribute("isMorador", true);
+        model.addAttribute("currentUserHome", "/morador");
+        model.addAttribute("currentUserRoleLabel", "Morador");
+
         return "morador/reservas/lista";
     }
 
     @Operation(summary = "Abre o formulário para solicitar uma nova reserva", tags = "15 - Morador Web - Reservas")
     @GetMapping("/nova")
     public String telaNovaReserva(Model model) {
-        model.addAttribute("areasComuns", areaComumRepository.findAll());
+        model.addAttribute("areasComuns", areaComumRepository.findAllByAtivaTrue()  );
+
+        model.addAttribute("isMorador", true);
+        model.addAttribute("currentUserHome", "/morador");
+        model.addAttribute("currentUserRoleLabel", "Morador");
+
         return "morador/reservas/detalhe";
     }
 
@@ -78,7 +89,7 @@ public class MoradorReservaCotroller {
     }
 
     @Operation(summary = "Cancela uma reserva previamente solicitada pelo próprio morador", tags = "15 - Morador Web - Reservas")
-    @PatchMapping("/{reservaId}/cancelar")
+    @PostMapping("/{reservaId}/cancelar")
     public String cancelarReserva(
             Authentication authentication,
             @PathVariable UUID reservaId,
