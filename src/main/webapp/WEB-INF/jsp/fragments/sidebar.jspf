@@ -12,6 +12,8 @@
             <a href="${ctx}/admin/blocos" class="nav-link">Blocos</a>
             <a href="${ctx}/admin/usuarios" class="nav-link">Usuarios</a>
             <a href="${ctx}/admin/vinculos-morador" class="nav-link">Vincular Morador</a>
+            <a href="${ctx}/admin/reservas" class="nav-link">Gerenciar Reservas</a>
+            <a href="${ctx}/admin/areas" class="nav-link">Gerencias Areas</a>
             <a href="${ctx}/admin/escopo-colaborador" class="nav-link">Escopo Colaborador</a>
             <a href="${ctx}/admin/tipos-chamado" class="nav-link">Tipos de Chamado</a>
             <a href="${ctx}/admin/status-chamado" class="nav-link">Status</a>
@@ -21,6 +23,7 @@
         <c:if test="${isMorador}">
             <a href="${ctx}/morador/chamados" class="nav-link">Meus Chamados</a>
             <a href="${ctx}/morador/chamados/novo" class="nav-link">Abrir Chamado</a>
+            <a href="${ctx}/morador/reservas" class="nav-link">Reservas de Areas Comuns</a>
         </c:if>
 
         <c:if test="${isColaborador}">
